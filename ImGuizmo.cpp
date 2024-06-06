@@ -1758,6 +1758,32 @@ namespace ImGuizmo
             float lengthOnAxis = Dot(axisValue, delta);
             delta = axisValue * lengthOnAxis;
          }
+         // 2 axis constraint!
+         else if (gContext.mCurrentOperation >= MOVE_YZ && gContext.mCurrentOperation <= MOVE_XY)
+         {
+            int axisIndices[2];
+            switch (gContext.mCurrentOperation)
+            {
+            case MOVE_YZ:
+               axisIndices[0] = 1;
+               axisIndices[1] = 2;
+               break;
+            case MOVE_ZX:
+               axisIndices[0] = 2;
+               axisIndices[1] = 0;
+               break;
+            case MOVE_XY:
+               axisIndices[0] = 0;
+               axisIndices[1] = 1;
+               break;
+            }
+            
+            const vec_t& axisValue0 = *(vec_t*)&gContext.mModel.m[axisIndices[0]];
+            const vec_t& axisValue1 = *(vec_t*)&gContext.mModel.m[axisIndices[1]];
+            float lengthOnAxis0 = Dot(axisValue0, delta);
+            float lengthOnAxis1 = Dot(axisValue1, delta);
+            delta = (axisValue0 * lengthOnAxis0) + (axisValue1 * lengthOnAxis1);
+         }
 
          // snap
          if (snap)
